@@ -6,3 +6,4 @@ jobs:
     steps:
       - name: Print Greeting
         run: echo "Hello World!"
+        # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows

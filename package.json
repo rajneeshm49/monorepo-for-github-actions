@@ -2,7 +2,10 @@
   "name": "monorepo-for-github-actions",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "lint:mulesoft": "nx lint --project mulesoft",
+    "test:mulesoft": "nx test --project mulesoft"
+  },
   "private": true,
   "dependencies": {
     "@nestjs/common": "^9.1.1",
