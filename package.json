@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "lint:mulesoft": "nx lint --project mulesoft",
-    "test:mulesoft": "nx test --project mulesoft"
+    "mulesoft:lint": "nx lint --project mulesoft",
+    "mulesoft:test": "nx test --project mulesoft",
+    "mulesoft:build": "nx run mulesoft:build",
+    "mulesoft:serve": "nx run mulesoft:serve"
   },
   "private": true,
   "dependencies": {
