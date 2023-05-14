@@ -30,7 +30,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Copy application sources (.ts, .tsx, js)
-COPY apps/mulesoft/src/ src/
+COPY ../apps/mulesoft/src/ src/
 
 # Build application (produces dist/ folder)
 RUN npm run mulesoft:build
