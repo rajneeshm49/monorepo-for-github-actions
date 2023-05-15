@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mulesoft-pod
+spec:
+  template:
+    metadata:
+      name: mulesoft-pod
+    spec:
+      containers:
+        - name: mulesoft-pod
+          image: rajneeshm49/mulesoft-image
+          imagePullPolicy: Never
+      restartPolicy: Never

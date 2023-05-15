@@ -1,0 +1,26 @@
+version: '3.8'
+
+networks:
+  corp:
+    driver: bridge
+
+services:
+  mulesoft:
+    container_name: mulesoft
+    build:
+      context: ./
+      cache_from:
+        - my-base-image:nx-base
+      dockerfile: ./apps/mulesoft/Dockerfile
+      args:
+        NODE_ENV: 'development'
+        BUILD_FLAG: ''
+    image: mulesoft:nx-dev
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: 'development'
+      PORT: 3000
+    networks:
+      - corp
+    restart: on-failure

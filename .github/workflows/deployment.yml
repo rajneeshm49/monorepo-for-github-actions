@@ -1,3 +1,7 @@
+# You can skip actions by adding [skip ci] in comments while committing
+# Run action on pull-request is EVENT
+# Run action on pull-request (open) is ACTIVITY TYPE
+# Run action on pull-request (open) for specific branch is EVENT FILTER
 name: Deployment
 on: push
 jobs:
@@ -13,9 +17,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run lint
-        run: npm run lint:mulesoft
+        run: npm run mulesoft:lint
       - name: Run test
-        run: npm run test:mulesoft
+        run: npm run mulesoft:test
+      - name: Generate build
+        run: npm run mulesoft:build
+      - name: Upload dist
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
   deploy:
     needs: test
     runs-on: ubuntu-latest
