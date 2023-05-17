@@ -2,10 +2,12 @@
 # Run action on pull-request is EVENT
 # Run action on pull-request (open) is ACTIVITY TYPE
 # Run action on pull-request (open) for specific branch is EVENT FILTER
+
+# Default environment variables https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
 name: Deployment
 on: push
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -18,6 +20,17 @@ jobs:
         run: npm ci
       - name: Run lint
         run: npm run mulesoft:lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
       - name: Run test
         run: npm run mulesoft:test
       - name: Generate build
