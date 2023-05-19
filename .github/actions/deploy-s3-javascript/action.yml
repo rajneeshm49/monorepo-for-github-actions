@@ -1,0 +1,20 @@
+# This is a custom javascript action
+name: Deploy to S3
+description: THIS IS A CUSTOM JAVASCRIPT ACTION THAT WILL DEPLOY THE BUILD TO S3. OTHER 2 TYPES OF CUSTOM ACTIONS ARE COMPOSITE AND DOCKER
+inputs:
+  bucket:
+    required: true
+    description: The aws bucket name to which the app will be deployed
+  region:
+    required: false
+    default: 'us-east-1'
+    description: The aws region
+  dist-folder:
+    required: true
+    description: The dist folder to be uploaded
+outputs:
+  s3-url:
+    description: The url of the file being uploaded to s3
+runs:
+  using: 'node16'
+  main: 'main.js'

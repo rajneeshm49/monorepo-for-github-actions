@@ -1,0 +1,17 @@
+name: Call reusable workflow
+on: push
+jobs:
+  build_the_base:
+    uses: ./.github/workflows/base-action.yml
+    with:
+      file-name: xyz.js
+    secrets:
+      GH_TOKEN: ${{secrets.GH_TOKEN}}
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+
+  print_the_output:
+    needs: build_the_base
+    runs-on: ubuntu-latest
+    steps:
+      - name: print the output
+        run: echo "The output from reusable workflow is ${{ needs.build_the_base.outputs.my-output}}"
