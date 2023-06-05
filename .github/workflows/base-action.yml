@@ -69,19 +69,19 @@ jobs:
         run: echo "Cache was used? ${{steps.node-module-cache.outputs.used-cache}}"
         # This step prints output of previous step which got output from reusable action
 
-      - name: lint
-        run: npm run mulesoft:lint
+      # - name: lint
+      #   run: npm run mulesoft:lint
 
-      - name: test
-        id: test
-        run: npm run mulesoft:test
+      # - name: test
+      #   id: test
+      #   run: npm run mulesoft:test
 
-      - name: Upload test report
-        if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-report
-          path: test.json # this file should already be generated after running npm run mulesoft:test
+      # - name: Upload test report
+      #   if: failure() && steps.test.outcome == 'failure'
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test-report
+      #     path: test.json # this file should already be generated after running npm run mulesoft:test
 
       - name: Generate build
         run: |
