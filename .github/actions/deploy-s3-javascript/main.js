@@ -10,6 +10,8 @@ function run() {
   const distFolder = getInput('dist-folder');
 
   notice('Hello from github action');
+  exec('ls');
+  exec('pwd');
   exec(`aws s3 sync ${distFolder} s3://${bucket} --region ${region}`);
 
   const s3URL = `https://${bucket}.s3-website-${region}.amazonaws.com`;
