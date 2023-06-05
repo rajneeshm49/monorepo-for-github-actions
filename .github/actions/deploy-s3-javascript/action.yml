@@ -16,5 +16,5 @@ outputs:
   s3-url:
     description: The url of the file being uploaded to s3
 runs:
-  using: 'node16'
+  using: 'node18'
   main: 'main.js'

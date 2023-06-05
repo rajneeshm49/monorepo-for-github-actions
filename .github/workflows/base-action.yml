@@ -131,31 +131,31 @@ jobs:
         id: print-random
         run: echo "str=${{inputs.file-name}}" >> $GITHUB_OUTPUT
 
-      - name: Download dist
-        uses: actions/download-artifact@v3
-        with:
-          name: mulesoft-app
-          path: ./dist
+      # - name: Download dist
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: mulesoft-app
+      #     path: ./dist
 
-      - name: configure AWS
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+      # - name: configure AWS
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - name: Run custom action and deploy to s3
-        id: deploy
-        uses: ./.github/actions/deploy-s3-javascript
-        env:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # This will set AWS env variable in ubuntu-latest and then aws cli on this machine can run aws command to
-          # upload file to s3
-        # call custom javascript action by passing below 2 parameters
-        with:
-          dist-folder: ./dist
-          bucket: mulesoft-app-bucket
+      # - name: Run custom action and deploy to s3
+      #   id: deploy
+      #   uses: ./.github/actions/deploy-s3-javascript
+      #   env:
+      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     # This will set AWS env variable in ubuntu-latest and then aws cli on this machine can run aws command to
+      #     # upload file to s3
+      #   # call custom javascript action by passing below 2 parameters
+      #   with:
+      #     dist-folder: ./dist
+      #     bucket: mulesoft-app-bucket
 
-      - name: Print the url of file uploaded to s3
-        run: echo "The live url is ${{ steps.deploy.outputs.s3-url }}"
+      # - name: Print the url of file uploaded to s3
+      #   run: echo "The live url is ${{ steps.deploy.outputs.s3-url }}"
