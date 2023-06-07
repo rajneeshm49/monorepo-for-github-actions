@@ -1,5 +1,6 @@
+# This will call reusable workflow file base-action.yml
 name: Call reusable workflow
-on: push
+on: push1
 jobs:
   build_the_base:
     uses: ./.github/workflows/base-action.yml

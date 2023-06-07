@@ -1,20 +1,14 @@
-# If steps are repeated, we can create a reusable action. If jobs are repeated we can create a reusable workflows.
-name: Cache dependencies
-description: THIS IS A CUSTOM ACTION OF COMPOSITE TYPE (OTHERS ARE DOCKER AND JAVASCRIPT CUSTOM ACTIONS)
-inputs:
-  caching:
-    description: This is to demonstrate inputs in reusable actions.
-    required: false
-    default: 'true'
-outputs:
-  used-cache:
-    description: 'Whether the cache was used or not.'
-    value: ${{ steps.return-output.outputs.cache-was-used }}
+name: Cache dependences
+description: This is to create a single action and write all the steps for npm install and caching dependencies
 runs:
-  using: 'composite'
+  using: composite
   steps:
-    - name: Cache node modules
-      if: inputs.caching == 'true'
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Cache dependencies
       id: cache-npm
       uses: actions/cache@v3
       with:
@@ -22,11 +16,6 @@ runs:
         key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
 
     - name: Install dependencies
-      if: steps.cache-npm.outputs.cache-hit != 'true' || inputs.caching != 'true'
+      if: steps.cache-npm.outputs.cache-hit != 'true'
       run: npm ci
-      shell: bash
-
-    - name: Return Output
-      id: return-output
-      run: echo "cache-was-used=${{inputs.caching}}" >> $GITHUB_OUTPUT
       shell: bash
