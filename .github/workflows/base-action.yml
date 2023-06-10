@@ -1,0 +1,177 @@
+# This is a reusable workflow that is being called by call-reusable-jobs.yml and accepts inputs and secrets being passed
+# from there and returns outputs
+
+name: base-action
+on:
+  workflow_call:
+    inputs:
+      file-name:
+        description: The file name that needs to be deployed should be passed here
+        type: string
+        default: 'abc.js'
+        required: true
+    secrets:
+      GH_TOKEN:
+        description: this iam passing from call-reusable-jobs.yml and that in return picks it from github settings
+        required: true
+      SONAR_TOKEN:
+        description: this iam passing from call-reusable-jobs.yml and that in return picks it from github settings
+        required: true
+      AWS_ACCESS_KEY_ID:
+        description: this iam passing from call-reusable-jobs.yml and that in return picks it from github settings
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: this iam passing from call-reusable-jobs.yml and that in return picks it from github settings
+        required: true
+    outputs:
+      my-output:
+        description: This value will be returned to the workflow that calls this reusable workflow
+        value: ${{ jobs.deploy.outputs.output1 }}
+jobs:
+  prime_base:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: extract branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v7
+
+      - name: Match branch name
+        uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match
+        with:
+          text: ${{ steps.branch-name.outputs.current_branch }}
+          regex: '^(feat|feature|bugfix|bug)'
+
+      - name: Check branch validity
+        id: validity
+        run: echo "validity=${{steps.regex-match.outputs.match || false}}" >> $GITHUB_OUTPUT
+
+      - name: Check branch validity
+        run: |
+          if [[ ${{steps.validity.outputs.validity }} ==  false ]]; then
+            echo "branch name is invalid"
+            exit 1
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+        # This step is using reusable action
+      - name: Cache node modules
+        id: node-module-cache
+        uses: ./.github/actions/cache-deps
+        with:
+          caching: false
+          # So here npm caching will not take place but on line 106 it will use cached deps since by default caching: true
+          # in reusable action and we dont pass input `caching` ion line 106
+
+      - name: Display whether cache was used
+        run: echo "Cache was used? ${{steps.node-module-cache.outputs.used-cache}}"
+        # This step prints output of previous step which got output from reusable action
+
+      # - name: lint
+      #   run: npm run mulesoft:lint
+
+      # - name: test
+      #   id: test
+      #   run: npm run mulesoft:test
+
+      # - name: Upload test report
+      #   if: failure() && steps.test.outcome == 'failure'
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test-report
+      #     path: test.json # this file should already be generated after running npm run mulesoft:test
+
+      - name: Generate build
+        run: |
+          npm run mulesoft:build
+          ls
+
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: mulesoft-app
+          path: dist/apps/mulesoft
+
+  # sonarcloud:
+  #   name: Sonarcloud
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Get code
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy:
+    outputs:
+      output1: ${{ steps.print-random.outputs.str }}
+    runs-on: ubuntu-latest
+    # needs: sonarcloud
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      # This step is using reusable action
+      - name: Cache node modules
+        id: node-module-cache
+        uses: ./.github/actions/cache-deps
+
+      - name: Display whether cache was used
+        run: echo "Cache was used? ${{steps.node-module-cache.outputs.used-cache}}"
+      # This step prints output of previous step which got output from reusable action
+
+      - name: Print random
+        id: print-random
+        run: echo "str=${{inputs.file-name}}" >> $GITHUB_OUTPUT
+
+      # - name: Download dist
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: mulesoft-app
+      #     path: ./dist
+
+      # - name: configure AWS
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
+
+  deploy1:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: Download dist
+        uses: actions/download-artifact@v3
+        with:
+          name: mulesoft-app
+          path: ./dist
+
+      - name: Run custom action and deploy to s3
+        id: deploy
+        uses: ./.github/actions/deploy-s3-javascript
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # This will set AWS env variable in ubuntu-latest and then aws cli on this machine can run aws command to
+          # upload file to s3
+        # call custom javascript action by passing below 2 parameters
+        with:
+          dist-folder: ./dist
+          bucket: mulesoft-app-bucket

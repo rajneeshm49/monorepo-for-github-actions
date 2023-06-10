@@ -1,0 +1,21 @@
+name: Cache dependences
+description: This is to create a single action and write all the steps for npm install and caching dependencies
+runs:
+  using: composite
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Cache dependencies
+      id: cache-npm
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install dependencies
+      if: steps.cache-npm.outputs.cache-hit != 'true'
+      run: npm ci
+      shell: bash

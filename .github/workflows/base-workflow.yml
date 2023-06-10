@@ -1,0 +1,50 @@
+name: Base Workflow
+on:
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        description: Sonar generated token
+        required: true
+jobs:
+  base-workflow:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v7
+
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match
+        with:
+          text: ${{ steps.branch-name.outputs.current_branch }}
+          regex: '^(feat|feature|bug|bugfix)'
+          flags: 'gi'
+
+      - name: Validate branch name
+        run: |
+          if [ ${{ steps.regex-match.outputs.match }} == '' ]
+          then
+            echo "Branch name is invalid. Branch bame should start with feat|feature|bug|bugfix"
+            exit 1
+          else
+            echo "Branch name is valid"
+          fi
+
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        uses: ./.github/actions/cache-deps
+
+      - name: lint
+        run: npm run mulesoft:lint
+
+      - name: test
+        run: npm run mulesoft:test
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
