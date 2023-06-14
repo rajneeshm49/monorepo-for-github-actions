@@ -1,0 +1,18 @@
+FROM base:latest as BUILD
+
+EXPOSE 3000
+
+WORKDIR /usr/src/app
+
+CMD ["node", "main"]
+COPY . /usr/src/app/
+
+RUN yarn nx run mulesoft:build --prod
+
+RUN cp -r ./dist/apps/mulesoft/ ./mulesoft-connector/
+
+RUN rm -r dist
+
+RUN npm prune --production
+
+RUN find . -maxdepth 1 ! -name '.' ! -name '..' ! -name 'mulesoft-connector' ! -name 'node_modules' -exec rm -r {} +
