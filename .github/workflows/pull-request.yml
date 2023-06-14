@@ -16,14 +16,17 @@ env:
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
+defaults:
+  run:
+    working-directory: .
 jobs:
-  base-workflow:
-    uses: ./.github/workflows/base-workflow.yml
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  # base-workflow:
+  #   uses: ./.github/workflows/base-workflow.yml
+  #   secrets:
+  #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    needs: base-workflow
+    # needs: base-workflow
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
@@ -78,20 +81,22 @@ jobs:
         with:
           driver: docker
 
-      - name: Build base image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          builder: ${{ steps.buildx.outputs.name }}
-          file: ./docker-base-action
-          tags: base:latest
+      # - name: Build base image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     builder: ${{ steps.buildx.outputs.name }}
+      #     file: ./docker-base-action
+      #     tags: base:latest
 
       - name: Hybris Build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
-          builder: ${{ steps.buildx.outputs.name }}
+          # builder: ${{ steps.buildx.outputs.name }}
           file: ./docker-mulesoft-action
+          # file: api/dockerfiles/api/Dockerfile
+          # context: ./api
           push: true
           # tags: 972267709493.dkr.ecr.us-east-1.amazonaws.com/raj-ecr/${{ env.MULESOFT_REPOSITORY }}:${{ env.BRANCH }}-${{env.VERSION}}
-          tags: 972267709493.dkr.ecr.us-east-1.amazonaws.com/raj-ecr/${{ env.MULESOFT_REPOSITORY }}:111
+          tags: 972267709493.dkr.ecr.us-east-1.amazonaws.com/raj-ecr/${{ env.MULESOFT_REPOSITORY }}:latest
