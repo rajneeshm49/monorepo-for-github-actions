@@ -1,18 +1,50 @@
-FROM base:latest as BUILD
+# Building layer
+FROM node:lts-alpine3.10  as development
 
+# Optional NPM automation (auth) token build argument
+# ARG NPM_TOKEN
+
+# Optionally authenticate NPM registry
+# RUN npm set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+
+WORKDIR /app
+
+# Copy configuration files
+COPY tsconfig*.json ./
+COPY package*.json ./
+RUN apk add --update python make g++\
+   && rm -rf /var/cache/apk/*
+# Install dependencies from package-lock.json, see https://docs.npmjs.com/cli/v7/commands/npm-ci
+RUN npm ci
+
+# Copy application sources (.ts, .tsx, js)
+COPY . .
+
+# Build application (produces dist/ folder)
+RUN npm run mulesoft:build
+
+# Runtime (production) layer
+FROM node:16-alpine as production
+
+# Optional NPM automation (auth) token build argument
+# ARG NPM_TOKEN
+
+# Optionally authenticate NPM registry
+# RUN npm set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+
+WORKDIR /app
+
+# Copy dependencies files
+COPY package*.json ./
+
+# Install runtime dependecies (without dev/test dependecies)
+RUN npm ci --omit=dev
+
+# Copy production build
+COPY --from=development /app/dist/apps/mulesoft ./dist/
+
+# Expose application port
 EXPOSE 3000
 
-WORKDIR /usr/src/app
-
-CMD ["node", "main"]
-COPY . /usr/src/app/
-
-RUN yarn nx run mulesoft:build --prod
-
-RUN cp -r ./dist/apps/mulesoft/ ./mulesoft-connector/
-
-RUN rm -r dist
-
-RUN npm prune --production
-
-RUN find . -maxdepth 1 ! -name '.' ! -name '..' ! -name 'mulesoft-connector' ! -name 'node_modules' -exec rm -r {} +
+# Start application
+CMD [ "node", "dist/main.js" ]

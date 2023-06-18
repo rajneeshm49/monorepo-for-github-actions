@@ -73,13 +73,13 @@ jobs:
         with:
           driver: docker
 
-      - name: Build base image
-        uses: docker/build-push-action@v2
-        with:
-          context: '{{defaultContext}}'
-          builder: ${{ steps.buildx.outputs.name }}
-          file: ./docker-base-action
-          tags: base:latest
+      # - name: Build base image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: '{{defaultContext}}'
+      #     builder: ${{ steps.buildx.outputs.name }}
+      #     file: ./docker-base-action
+      #     tags: base:latest
 
       - name: Mulesoft Build
         uses: docker/build-push-action@v4
@@ -88,3 +88,26 @@ jobs:
           file: ./docker-mulesoft-action
           push: true
           tags: 972267709493.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+
+      - name: Set the Kubernetes context
+        uses: azure/k8s-set-context@v2
+        with:
+          method: service-account
+          k8s-url: https://8B19C99A1D79E34C73F6B8CAE871871B.gr7.us-east-1.eks.amazonaws.com
+          k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: Deploy to the Kubernetes cluster
+        uses: azure/k8s-deploy@v1
+        with:
+          namespace: default
+          manifests: |
+            deployment.yml
+            service.yml
+          images: |
+            972267709493.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+
+
+            # courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
