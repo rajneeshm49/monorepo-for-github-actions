@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mulesoft-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: mule
+  template:
+    metadata:
+      labels:
+        component: mule
+    spec:
+      containers:
+        - name: mulesoft
+          image: 972267709493.dkr.ecr.us-east-1.amazonaws.com/mulesoft-connector-app-non-prod
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: docker-registry

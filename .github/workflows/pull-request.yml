@@ -58,7 +58,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::972267709493:role/githubdemo
+          role-to-assume: arn:aws:iam::370687047370:role/Github-ECS-Full-access
           aws-region: ${{ env.AWS_REGION }}
 
       # - name: Upload to s3
@@ -73,13 +73,13 @@ jobs:
         with:
           driver: docker
 
-      - name: Build base image
-        uses: docker/build-push-action@v2
-        with:
-          context: '{{defaultContext}}'
-          builder: ${{ steps.buildx.outputs.name }}
-          file: ./docker-base-action
-          tags: base:latest
+      # - name: Build base image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: '{{defaultContext}}'
+      #     builder: ${{ steps.buildx.outputs.name }}
+      #     file: ./docker-base-action
+      #     tags: base:latest
 
       - name: Mulesoft Build
         uses: docker/build-push-action@v4
@@ -87,4 +87,27 @@ jobs:
           context: '{{defaultContext}}'
           file: ./docker-mulesoft-action
           push: true
-          tags: 972267709493.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+          tags: 370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+
+      - name: Set the Kubernetes context
+        uses: azure/k8s-set-context@v2
+        with:
+          method: service-account
+          k8s-url: https://A030286F93CF0B47A0E2A3A97EA2BB34.gr7.us-east-1.eks.amazonaws.com
+          k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: Deploy to the Kubernetes cluster
+        uses: azure/k8s-deploy@v1
+        with:
+          namespace: default
+          manifests: |
+            k8s/deployment.yaml
+            k8s/service.yaml
+          images: |
+            370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+
+
+            # courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
