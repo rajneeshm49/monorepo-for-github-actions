@@ -1,19 +1,14 @@
 # Building layer
-FROM node:lts-alpine3.10  as development
+FROM node:latest as development
 
-# Optional NPM automation (auth) token build argument
-# ARG NPM_TOKEN
 
-# Optionally authenticate NPM registry
-# RUN npm set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
 
 WORKDIR /app
 
 # Copy configuration files
 COPY tsconfig*.json ./
 COPY package*.json ./
-RUN apk add --update python make g++\
-   && rm -rf /var/cache/apk/*
+# RUN apk add --update python make g++ && rm -rf /var/cache/apk/*
 # Install dependencies from package-lock.json, see https://docs.npmjs.com/cli/v7/commands/npm-ci
 RUN npm ci
 
@@ -25,12 +20,6 @@ RUN npm run mulesoft:build
 
 # Runtime (production) layer
 FROM node:16-alpine as production
-
-# Optional NPM automation (auth) token build argument
-# ARG NPM_TOKEN
-
-# Optionally authenticate NPM registry
-# RUN npm set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
 
 WORKDIR /app
 

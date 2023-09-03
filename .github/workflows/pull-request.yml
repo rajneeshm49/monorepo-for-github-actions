@@ -6,13 +6,8 @@ on:
   #   - main
 env:
   BUCKET_NAME: mulesoft-app-bucket1
-  AWS_REGION: us-east-1
-  ECR_REGISTRY: ${{secrets.ECR_DEV_ACCOUNT}}
+  AWS_REGION: us-east-2
   MULESOFT_REPOSITORY: mulesoft-connector-app-non-prod
-
-  DIRECTUS_REPOSITORY: directus-connector-app-non-prod
-  BRANCH: ${{ github.event.inputs.BRANCH }}
-  VERSION: ${{ github.event.inputs.VERSION }}
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
@@ -81,19 +76,27 @@ jobs:
       #     file: ./docker-base-action
       #     tags: base:latest
 
-      - name: Mulesoft Build
+      - name: Mulesoft Build and Push
         uses: docker/build-push-action@v4
         with:
           context: '{{defaultContext}}'
           file: ./docker-mulesoft-action
           push: true
-          tags: 370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+          tags: 370687047370.dkr.ecr.us-east-2.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+
+      - name: FE Build and Push
+        uses: docker/build-push-action@v4
+        with:
+          context: '{{defaultContext}}'
+          file: ./docker-fe-action.yaml
+          push: true
+          tags: 370687047370.dkr.ecr.us-east-2.amazonaws.com/fe-app-non-prod:latest
 
       - name: Set the Kubernetes context
         uses: azure/k8s-set-context@v2
         with:
           method: service-account
-          k8s-url: https://A030286F93CF0B47A0E2A3A97EA2BB34.gr7.us-east-1.eks.amazonaws.com
+          k8s-url: https://0B86B0DB08ADE6636AEC16F6EFD348C9.sk1.us-east-2.eks.amazonaws.com
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: checkout repo
@@ -104,10 +107,13 @@ jobs:
         with:
           namespace: default
           manifests: |
-            k8s/deployment.yaml
-            k8s/service.yaml
+            k8s/server/mule-deployment.yaml
+            k8s/server/mule-clusterip-service.yaml
+            k8s/client/fe-clusterip-service.yaml
+            k8s/client/fe-deployment.yaml
+            k8s/ingress-service.yaml
           images: |
             370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
 
 
-            # courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
+            # #courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions

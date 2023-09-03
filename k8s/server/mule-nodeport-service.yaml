@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mulesoft-node-port
+  name: mule-node-port
 spec:
   type: NodePort
   ports:
     - port: 3050
       targetPort: 3000
-      nodePort: 31515
+      nodePort: 31516
   selector:
     component: mule
