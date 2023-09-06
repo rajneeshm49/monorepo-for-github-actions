@@ -6,7 +6,7 @@ on:
   #   - main
 env:
   BUCKET_NAME: mulesoft-app-bucket1
-  AWS_REGION: us-east-2
+  AWS_REGION: us-east-1
   MULESOFT_REPOSITORY: mulesoft-connector-app-non-prod
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -82,7 +82,7 @@ jobs:
           context: '{{defaultContext}}'
           file: ./docker-mulesoft-action
           push: true
-          tags: 370687047370.dkr.ecr.us-east-2.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+          tags: 370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
 
       - name: FE Build and Push
         uses: docker/build-push-action@v4
@@ -90,13 +90,13 @@ jobs:
           context: '{{defaultContext}}'
           file: ./docker-fe-action.yaml
           push: true
-          tags: 370687047370.dkr.ecr.us-east-2.amazonaws.com/fe-app-non-prod:latest
+          tags: 370687047370.dkr.ecr.us-east-1.amazonaws.com/fe-app-non-prod:latest
 
       - name: Set the Kubernetes context
         uses: azure/k8s-set-context@v2
         with:
           method: service-account
-          k8s-url: https://0B86B0DB08ADE6636AEC16F6EFD348C9.sk1.us-east-2.eks.amazonaws.com
+          k8s-url: https://0B86B0DB08ADE6636AEC16F6EFD348C9.sk1.us-east-1.eks.amazonaws.com
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: checkout repo
