@@ -19,4 +19,12 @@ Run `npx nx connect-to-nx-cloud` to enable [remote caching](https://nx.app) and 
 ## Further help
 
 Visit the [Nx Documentation](https://nx.dev) to learn more.
+
 # monorepo-for-github-actions
+
+KUBERNETES
+
+1. Secrets
+   a) regcred is a secret used in deployment.yml. It gives kubernetes authorization to pull image from ecr registry and deploy on eks. Its made up of ecr username and pwd
+   b) github-actions-secret is a secret associated with github-actions service account. github-actions service account is created so that we can use github-actions-secret's token in `set-kubernetes-cluster-info` which is a readymade github action. It gives this action authorization to perform all kubernetes task.
+   github-actions SA is binded with cluster role using cluster role binding. https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
