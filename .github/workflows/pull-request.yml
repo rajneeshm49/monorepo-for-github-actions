@@ -29,7 +29,7 @@ jobs:
         # This step must be called to use your own action (the next step)
 
       - name: Reset cache
-        uses: npm run reset-cache
+        run: npm run reset-cache
 
       - name: Install dependencies
         uses: ./.github/actions/cache-deps
