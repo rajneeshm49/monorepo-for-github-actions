@@ -57,7 +57,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           # https://www.udemy.com/course/github-actions-the-complete-guide/learn/lecture/34140726#overview
-          role-to-assume: arn:aws:iam::682755029646:role/Github-ECS-Full-access
+          role-to-assume: arn:aws:iam::682755029646:role/github-ecs-full-access
           aws-region: ${{ env.AWS_REGION }}
 
       # - name: Upload to s3
