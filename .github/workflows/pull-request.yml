@@ -28,11 +28,11 @@ jobs:
         uses: actions/checkout@v3
         # This step must be called to use your own action (the next step)
 
-      - name: Reset cache
-        run: npm run reset-cache
-
       - name: Install dependencies
         uses: ./.github/actions/cache-deps
+
+      - name: Reset cache
+        run: npm run reset-cache
 
       - name: Generate build
         run: npm run mulesoft:build
