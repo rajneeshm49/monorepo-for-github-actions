@@ -9,7 +9,8 @@
     "mulesoft:build": "nx run mulesoft:build",
     "mulesoft:serve": "nx run mulesoft:serve",
     "fe:build": "nx run fe:build",
-    "fe:serve": "nx run fe:serve:production"
+    "fe:serve": "nx run fe:serve:production",
+    "reset-cache": "nx reset"
   },
   "private": true,
   "dependencies": {
