@@ -41,7 +41,7 @@
 FROM node:16-alpine as node
 WORKDIR /app
 COPY . .
-RUN NODE_ENV=development npm i
+RUN npm i
 RUN npm run fe:build
 #stage 2
 FROM nginx:alpine
