@@ -1,6 +1,7 @@
 # This will call reusable workflow file base-action.yml
 name: Call reusable workflow
-on: push1
+on: delete
+# change it to `push` later. Currently i have it `delete` so it doesnt run on pushing changes to branch
 jobs:
   build_the_base:
     uses: ./.github/workflows/base-action.yml
