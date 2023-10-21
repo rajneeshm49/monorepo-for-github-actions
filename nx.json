@@ -3,10 +3,9 @@
   "npmScope": "monorepo-for-github-actions",
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx-cloud",
+      "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
-        "accessToken": "Nzk4MzgxODItNGY2Zi00NzZlLWJjNzUtMTY2MjY2MzY1MjlmfHJlYWQtd3JpdGU="
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
     }
   },
