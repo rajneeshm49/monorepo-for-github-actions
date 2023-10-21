@@ -86,7 +86,7 @@ jobs:
           context: '{{defaultContext}}'
           file: ./docker-mulesoft-action
           push: true
-          tags: 82755029646.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
+          tags: 682755029646.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REPOSITORY }}:latest
 
       - name: FE Build and push
         uses: docker/build-push-action@v4
