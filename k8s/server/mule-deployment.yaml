@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: mulesoft
-          image: 370687047370.dkr.ecr.us-east-1.amazonaws.com/mulesoft-connector-app-non-prod
+          image: 682755029646.dkr.ecr.us-east-1.amazonaws.com/mulesoft-connector-app-non-prod
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
