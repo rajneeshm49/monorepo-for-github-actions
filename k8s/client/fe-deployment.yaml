@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fe
-          image: 370687047370.dkr.ecr.us-east-1.amazonaws.com/fe-app-non-prod
+          image: 682755029646.dkr.ecr.us-east-1.amazonaws.com/fe-app-non-prod
           imagePullPolicy: Always
           ports:
             - containerPort: 80
