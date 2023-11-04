@@ -1,42 +1,155 @@
-name: Push to branch
-on: push
+# This will call reusable workflow file base-workflow.yml
+name: Push to main branch
+on:
+  push
+  # branches:
+  #   - main
+env:
+  AWS_REGION: us-east-1
+  REGISTRY: 682755029646.dkr.ecr.us-east-1.amazonaws.com
+  MULESOFT_IMAGE_NAME: mulesoft-connector-app-non-prod
+  FE_IMAGE_NAME: fe-app-non-prod
 permissions:
-  id-token: write # Since we are using openID connect, id-token is used in combination with it.
-  # The job or workflow run requires a permissions setting with id-token: write. More about it can be read
-  # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+defaults:
+  run:
+    working-directory: .
 jobs:
   base-workflow:
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/base-workflow.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+  build:
+    # needs: base-workflow
+    runs-on: ubuntu-latest
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
+        # This step must be called to use your own action (the next step)
 
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/cache-deps
 
-      - name: lint
-        run: npm run mulesoft:lint
+      - name: Reset cache
+        run: npm run reset-cache
 
-      - name: test
-        run: npm run mulesoft:test
+      - name: Generate build
+        run: npm run mulesoft:build
+
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/apps/mulesoft/
 
   build-push-image-to-ecr:
+    needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: ./dist
+
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
+          # https://www.udemy.com/course/github-actions-the-complete-guide/learn/lecture/34140726#overview
           role-to-assume: arn:aws:iam::682755029646:role/ecs-access-for-github
-          aws-region: 'us-east-1'
+          aws-region: ${{ env.AWS_REGION }}
+
+      # - name: Upload to s3
+      #   run: aws s3 sync ./dist s3://${{env.BUCKET_NAME}} --region ${{env.AWS_REGION}}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          driver: docker
+
+      # - name: Build base image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: '{{defaultContext}}'
+      #     builder: ${{ steps.buildx.outputs.name }}
+      #     file: ./docker-base-action
+      #     tags: base:latest
+
+      - name: Extract metadata for the Docker image
+        id: meta-mulesoft
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.MULESOFT_IMAGE_NAME }}
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+
+      - name: Extract metadata for the Docker image
+        id: meta-fe
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.FE_IMAGE_NAME }}
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+
       - name: Mulesoft Build and Push
         uses: docker/build-push-action@v4
         with:
+          context: '{{defaultContext}}'
           file: ./docker-mulesoft-action
           push: true
-          tags: 682755029646.dkr.ecr.us-east-1.amazonaws.com/mulesoft-connector-app-non-prod:latest
+          tags: ${{ steps.meta-mulesoft.outputs.tags }}
+          labels: ${{ steps.meta-mulesoft.outputs.labels }}
+
+      - name: FE Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: '{{defaultContext}}'
+          file: ./docker-fe-action.yaml
+          push: true
+          tags: ${{ steps.meta-fe.outputs.tags }}
+          labels: ${{ steps.meta-fe.outputs.labels }}
+
+    # THE BELOW PART IAM COMMENTING AND WILL UNCOMMENT WHEN I RESOLVE THE INGRESS-NGINX ISSUE ON LOCAL
+    # AND WHEN ITS DEPLOYABLE TO EKS
+    # - name: Set the Kubernetes context
+    #   uses: azure/k8s-set-context@v2
+    #   with:
+    #     method: service-account
+    #     k8s-url: https://0B86B0DB08ADE6636AEC16F6EFD348C9.sk1.us-east-1.eks.amazonaws.com
+    #     k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+
+    # - name: checkout repo
+    #   uses: actions/checkout@v3
+
+    # - name: Deploy to the Kubernetes cluster
+    #   uses: azure/k8s-deploy@v1
+    #   with:
+    #     namespace: default
+    #     manifests: |
+    #       k8s/server/mule-deployment.yaml
+    #       k8s/server/mule-clusterip-service.yaml
+    #       k8s/client/fe-clusterip-service.yaml
+    #       k8s/client/fe-deployment.yaml
+    #       k8s/ingress-service.yaml
+    #     images: |
+    #       370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REGISTRY }}:latest
+
+    #       # #courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
