@@ -1,7 +1,9 @@
 # This will call reusable workflow file base-workflow.yml
 name: Push to main branch
 on:
-  push
+  push:
+    tags:
+      - 'v*.*.*'
   # branches:
   #   - main
 env:
