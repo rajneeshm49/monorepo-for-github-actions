@@ -118,6 +118,11 @@ jobs:
           tags: ${{ steps.meta-mulesoft.outputs.tags }}
           labels: ${{ steps.meta-mulesoft.outputs.labels }}
 
+      - name: Print labels and tags
+        run: |
+          echo "tags are=," ${{ steps.meta-fe.outputs.tags }}
+          echo "labels are=," ${{ steps.meta-fe.outputs.labels }}
+
       - name: FE Build and push
         uses: docker/build-push-action@v4
         with:
