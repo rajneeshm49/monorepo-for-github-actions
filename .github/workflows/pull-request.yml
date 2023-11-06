@@ -95,7 +95,7 @@ jobs:
             type=semver,pattern={{major}}
             type=sha
 
-      - name: Extract metadata for the Docker image
+      - name: Extract metadata for the Docker image to use as version no.
         id: meta-fe
         uses: docker/metadata-action@v5
         with:
