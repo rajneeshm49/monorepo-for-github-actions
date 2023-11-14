@@ -13,8 +13,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /*
-            # - path: /?(.*)
+          - path: /?(.*)
             # UPDATE PATH
             pathType: Prefix
             # ADD PATHTYPE
