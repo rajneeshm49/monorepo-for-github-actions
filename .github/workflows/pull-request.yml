@@ -2,8 +2,7 @@
 name: Push to main branch
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    tags: ['**']
   # branches:
   #   - main
 env:
@@ -103,27 +102,28 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.FE_IMAGE_NAME }}
           tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
+            type=raw,value={{sha}},enable=${{ github.ref_type != 'tag' }}
+
+      - name: print few infos
+        run: |
+          echo "base ref is= " ${{github.event.base_ref}}
+          echo "github.ref_type= " ${{github.ref_type}}
+          echo "github.ref= " ${{github.ref}}
 
       - name: Mulesoft Build and Push
         uses: docker/build-push-action@v4
         with:
           context: '{{defaultContext}}'
           file: ./docker-mulesoft-action
-          push: true
-          tags: ${{ steps.meta-mulesoft.outputs.tags }}
-          labels: ${{ steps.meta-mulesoft.outputs.labels }}
-
-      - name: Print labels and tags
-        run: |
-          echo "tags are=," ${{ steps.meta-fe.outputs.tags }}
-          echo "labels are=," ${{ steps.meta-fe.outputs.labels }}
+          push: ${{
+            github.event.base_ref =='refs/heads/main' &&
+            github.ref_type == 'tag' &&
+            !startsWith(github.ref, 'refs/tags/v0.')
+            }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
 
       - name: FE Build and push
         uses: docker/build-push-action@v4
