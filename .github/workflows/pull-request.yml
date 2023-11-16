@@ -1,9 +1,9 @@
 # This will call reusable workflow file base-workflow.yml
 name: Push to main branch
 on:
-  push:
-    branches:
-      - 'main'
+  push
+  # branches:
+  #   - 'main'
   #   tags:
   #     - 'v[0-9]+.[0-9]+.[0-9]+'
   # pull_request:
