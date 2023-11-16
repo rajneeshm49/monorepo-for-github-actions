@@ -86,7 +86,7 @@ jobs:
       #     file: ./docker-base-action
       #     tags: base:latest
 
-      - name: Extract metadata for the Docker image
+      - name: Extract Metadata for the Docker image
         id: meta-mulesoft
         uses: docker/metadata-action@v5
         with:
