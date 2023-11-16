@@ -3,12 +3,12 @@ name: Push to main branch
 on:
   push:
     branches:
-      - '*'
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-  pull_request:
-    branches:
-      - '*'
+      - 'main'
+  #   tags:
+  #     - 'v[0-9]+.[0-9]+.[0-9]+'
+  # pull_request:
+  #   branches:
+  #     - '*'
 env:
   AWS_REGION: us-east-1
   REGISTRY: 682755029646.dkr.ecr.us-east-1.amazonaws.com
