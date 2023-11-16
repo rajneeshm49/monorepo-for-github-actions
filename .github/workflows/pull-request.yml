@@ -117,7 +117,7 @@ jobs:
           context: '{{defaultContext}}'
           file: ./docker-mulesoft-action
           push: ${{
-            github.event.base_ref =='refs/heads/main' &&
+            github.event.base_ref =='refs/heads/feat/dlt-dockerfile' &&
             github.ref_type == 'tag' &&
             !startsWith(github.ref, 'refs/tags/v0.')
             }}
@@ -129,7 +129,11 @@ jobs:
         with:
           context: '{{defaultContext}}'
           file: ./docker-fe-action.yaml
-          push: true
+          push: ${{
+            github.event.base_ref =='refs/heads/feat/dlt-dockerfile' &&
+            github.ref_type == 'tag' &&
+            !startsWith(github.ref, 'refs/tags/v0.')
+            }}
           tags: ${{ steps.meta-fe.outputs.tags }}
           labels: ${{ steps.meta-fe.outputs.labels }}
 
