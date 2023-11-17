@@ -108,7 +108,6 @@ jobs:
           echo "github.ref_type= " ${{github.ref_type}}
           echo "github.ref= " ${{github.ref}}
           echo "tags= " ${{steps.meta-fe.outputs.tags}}
-          echo "labels= " ${{steps.meta-fe.outputs.labels}}
 
       - name: Mulesoft Build and Push
         uses: docker/build-push-action@v4
