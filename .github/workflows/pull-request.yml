@@ -95,13 +95,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.FE_IMAGE_NAME }}
           tags: type=match,pattern=\d.\d.\d
 
-      # - name: print few infos
-      #   run: |
-      #     echo "base ref is= " ${{github.event.base_ref}}
-      #     echo "github.ref_type= " ${{github.ref_type}}
-      #     echo "github.ref= " ${{github.ref}}
-      #     echo "tags= " ${{steps.meta-fe.outputs.tags}}
-
       - name: Mulesoft Build and Push
         uses: docker/build-push-action@v4
         with:
