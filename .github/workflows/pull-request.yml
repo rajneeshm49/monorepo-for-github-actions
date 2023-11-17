@@ -86,14 +86,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.MULESOFT_IMAGE_NAME }}
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
+          tags: type=match,pattern=\d.\d.\d
 
       - name: Extract metadata for the Docker image to use as version no.
         id: meta-fe
@@ -102,12 +95,12 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.FE_IMAGE_NAME }}
           tags: type=match,pattern=\d.\d.\d
 
-      - name: print few infos
-        run: |
-          echo "base ref is= " ${{github.event.base_ref}}
-          echo "github.ref_type= " ${{github.ref_type}}
-          echo "github.ref= " ${{github.ref}}
-          echo "tags= " ${{steps.meta-fe.outputs.tags}}
+      # - name: print few infos
+      #   run: |
+      #     echo "base ref is= " ${{github.event.base_ref}}
+      #     echo "github.ref_type= " ${{github.ref_type}}
+      #     echo "github.ref= " ${{github.ref}}
+      #     echo "tags= " ${{steps.meta-fe.outputs.tags}}
 
       - name: Mulesoft Build and Push
         uses: docker/build-push-action@v4
