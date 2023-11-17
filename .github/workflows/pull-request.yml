@@ -158,4 +158,5 @@ jobs:
     #     images: |
     #       370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REGISTRY }}:latest
 
-    #       # #courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
+    # courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
+    # For image tagging https://medium.com/@haridasan/build-docker-images-using-github-actions-for-nestjs-monorepo-with-the-help-of-git-tags-9f6d404c40c5
