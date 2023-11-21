@@ -8,6 +8,7 @@ env:
   REGISTRY: 682755029646.dkr.ecr.us-east-1.amazonaws.com
   MULESOFT_IMAGE_NAME: mulesoft-connector-app-non-prod
   FE_IMAGE_NAME: fe-app-non-prod
+  EKS_CLUSTER_NAME: Kubernetes-demo
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
@@ -133,30 +134,31 @@ jobs:
           tags: ${{ steps.meta-fe.outputs.tags }}
           labels: ${{ steps.meta-fe.outputs.labels }}
 
-    # THE BELOW PART IAM COMMENTING AND WILL UNCOMMENT WHEN I RESOLVE THE INGRESS-NGINX ISSUE ON LOCAL
-    # AND WHEN ITS DEPLOYABLE TO EKS
-    # - name: Set the Kubernetes context
-    #   uses: azure/k8s-set-context@v2
-    #   with:
-    #     method: service-account
-    #     k8s-url: https://0B86B0DB08ADE6636AEC16F6EFD348C9.sk1.us-east-1.eks.amazonaws.com
-    #     k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+      # THE BELOW PART IAM COMMENTING AND WILL UNCOMMENT WHEN I RESOLVE THE INGRESS-NGINX ISSUE ON LOCAL
+      # AND WHEN ITS DEPLOYABLE TO EKS
+      - name: Set the Kubernetes context
+        uses: azure/k8s-set-context@v2
+        with:
+          method: service-account
+          k8s-url: https://B8A8F7D763AD7E2C9FA5D99CC39F65E2.gr7.us-east-1.eks.amazonaws.com
+          k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
-    # - name: checkout repo
-    #   uses: actions/checkout@v3
+      - name: checkout repo
+        uses: actions/checkout@v3
 
-    # - name: Deploy to the Kubernetes cluster
-    #   uses: azure/k8s-deploy@v1
-    #   with:
-    #     namespace: default
-    #     manifests: |
-    #       k8s/server/mule-deployment.yaml
-    #       k8s/server/mule-clusterip-service.yaml
-    #       k8s/client/fe-clusterip-service.yaml
-    #       k8s/client/fe-deployment.yaml
-    #       k8s/ingress-service.yaml
-    #     images: |
-    #       370687047370.dkr.ecr.us-east-1.amazonaws.com/${{ env.MULESOFT_REGISTRY }}:latest
+      - name: Deploy to the Kubernetes cluster
+        uses: azure/k8s-deploy@v1
+        with:
+          namespace: default
+          manifests: |
+            k8s/server/mule-deployment.yaml
+            k8s/server/mule-clusterip-service.yaml
+            k8s/client/fe-clusterip-service.yaml
+            k8s/client/fe-deployment.yaml
+            k8s/ingress-service-new.yaml
+          images: |
+            ${{ env.REGISTRY }}/${{ steps.meta-mulesoft.outputs.tags }}
+            ${{ env.REGISTRY }}/${{ steps.meta-fe.outputs.tags }}
 
     # courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
     # For image tagging https://medium.com/@haridasan/build-docker-images-using-github-actions-for-nestjs-monorepo-with-the-help-of-git-tags-9f6d404c40c5
