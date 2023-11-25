@@ -8,7 +8,7 @@ env:
   REGISTRY: 682755029646.dkr.ecr.us-east-1.amazonaws.com
   MULESOFT_IMAGE_NAME: mulesoft-connector-app-non-prod
   FE_IMAGE_NAME: fe-app-non-prod
-  EKS_CLUSTER_NAME: Kubernetes-demo
+  EKS_CLUSTER_NAME: Kubernetes-demo1
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
@@ -140,7 +140,7 @@ jobs:
         uses: azure/k8s-set-context@v2
         with:
           method: service-account
-          k8s-url: https://B8A8F7D763AD7E2C9FA5D99CC39F65E2.gr7.us-east-1.eks.amazonaws.com
+          k8s-url: https://8BCCC9F9CD39F640CE5E381FAA766120.sk1.us-east-1.eks.amazonaws.com
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: checkout repo
