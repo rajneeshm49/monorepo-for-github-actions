@@ -42,7 +42,7 @@ jobs:
           echo "Tag was not matched"
           exit 1
 
-      - name: Install dependencies
+      - name: Install dependenciey
         uses: ./.github/actions/cache-deps
 
       - name: Reset cache
