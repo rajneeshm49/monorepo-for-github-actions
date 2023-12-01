@@ -11,7 +11,7 @@ metadata:
     # UPDATE ANNOTATION
 spec:
   rules:
-    - host: ae5ee7580790c48db80caf4491694ae7-bb11e8e4e9bceb8c.elb.us-east-1.amazonaws.com
+    - host: abbb42cc9f1344282b9e286e1f561829-6862f115033f7dce.elb.us-east-1.amazonaws.com
       http:
         paths:
           - path: /?(.*)

@@ -48,6 +48,14 @@ jobs:
       - name: Reset cache
         run: npm run reset-cache
 
+      - name: create env file
+        run: |
+          touch .env
+          echo ${{ secrets.ENV_VARS }} >> .env
+
+      - name: Generate environment file for frontend
+        run: node generate-env.js
+
       - name: Generate build
         run: npm run mulesoft:build
 
@@ -140,7 +148,7 @@ jobs:
         uses: azure/k8s-set-context@v2
         with:
           method: service-account
-          k8s-url: https://8BCCC9F9CD39F640CE5E381FAA766120.sk1.us-east-1.eks.amazonaws.com
+          k8s-url: https://E8BCBA6ECF3401E6707485FF65D6D067.gr7.us-east-1.eks.amazonaws.com
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: checkout repo
