@@ -21,6 +21,8 @@ then
 
   kubectl apply -f k8s/service-account-secret.yaml
 
+  sed -i .bak "s/- host: .*/- host: $externalip/g" k8s/ingress-service-new.yaml
+
   secretyaml="$(kubectl get secret github-actions-secret -o yaml)";
   echo "paste below output in KUBERNETES_SECRET var in github secrets and also copy kubernetes server url in pull-request file";
   echo $secretyaml

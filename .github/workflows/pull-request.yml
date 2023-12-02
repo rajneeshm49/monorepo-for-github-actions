@@ -51,7 +51,10 @@ jobs:
       - name: create env file
         run: |
           touch .env
-          echo ${{ secrets.ENV_VARS }} >> .env
+          echo "API_URL=${{ secrets.ENV_VARS }}" >> .env
+
+      - name: Print the env file
+        run: cat .env
 
       - name: Generate environment file for frontend
         run: node generate-env.js
@@ -148,7 +151,7 @@ jobs:
         uses: azure/k8s-set-context@v2
         with:
           method: service-account
-          k8s-url: https://E8BCBA6ECF3401E6707485FF65D6D067.gr7.us-east-1.eks.amazonaws.com
+          k8s-url: https://53043386F54A89D8AB5416BABB80D98D.gr7.us-east-1.eks.amazonaws.com
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: checkout repo
