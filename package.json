@@ -10,7 +10,8 @@
     "mulesoft:serve": "nx run mulesoft:serve",
     "fe:build": "nx run fe:build",
     "fe:serve": "nx run fe:serve:production",
-    "reset-cache": "nx reset"
+    "reset-cache": "nx reset",
+    "postinstall": "mkdir -p .nx"
   },
   "private": true,
   "dependencies": {

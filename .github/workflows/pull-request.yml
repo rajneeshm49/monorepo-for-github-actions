@@ -1,4 +1,7 @@
 # This will call reusable workflow file base-workflow.yml
+
+# DIVIDE INDEPENDANT TASKS INTO JOBS SO THAT IF ONE JOB FAILS YOU CAN RERUN FAILED JOBS. DO NOT KEEP IT IN SAME JOB
+# AS STEPS. FOR EG: PUSH TO BE AND FE. MAKE IT SEPARATE JOB
 name: Push to main branch
 on:
   push:
