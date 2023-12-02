@@ -6,7 +6,7 @@
     "mulesoft:lint": "nx lint --project mulesoft",
     "mulesoft:test": "nx test --project mulesoft",
     "mulesoft:affected:test": "nx affected:test --project mulesoft",
-    "mulesoft:build": "nx run mulesoft:build",
+    "mulesoft:build": "export NX_DAEMON=false; nx run mulesoft:build",
     "mulesoft:serve": "nx run mulesoft:serve",
     "fe:build": "nx run fe:build",
     "fe:serve": "nx run fe:serve:production",
