@@ -1,8 +1,6 @@
 # Building layer
 FROM node:18 as development
 
-
-
 WORKDIR /app
 
 # Copy configuration files
