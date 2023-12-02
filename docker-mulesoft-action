@@ -1,5 +1,5 @@
 # Building layer
-FROM node:latest as development
+FROM node:18 as development
 
 
 
