@@ -2,7 +2,10 @@ function generateEnvironmentContent() {
   return `export const environment = {
   production: ${process.env.IS_PRODUCTION || false},
   HOST: "${process.env.HOST || 'http://localhost:4200'}",
-  API_URL: "${process.env.API_URL || 'http://localhost:3001/api'}"
+  API_URL: "${
+    process.env.API_URL ||
+    'http://a6a0343f9eed04f4eabc78898b13bfcc-14c00caa57d6ae56.elb.us-east-1.amazonaws.com/api'
+  }"
   };`;
 }
 (function generateEnvironment() {
