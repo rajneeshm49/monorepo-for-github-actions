@@ -2,7 +2,7 @@ function generateEnvironmentContent() {
   return `export const environment = {
   production: ${process.env.IS_PRODUCTION || false},
   HOST: "${process.env.HOST || 'http://localhost:4200'}",
-  API_URL: "${process.env.API_URL || 'http://localhost:3000/api'}"
+  API_URL: "${process.env.API_URL || 'http://localhost:3001/api'}"
   };`;
 }
 (function generateEnvironment() {
