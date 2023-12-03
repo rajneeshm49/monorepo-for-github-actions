@@ -62,11 +62,14 @@ jobs:
       - name: Print the env file
         run: cat .env
 
+      - name: Print environment.ts before change
+        run: cat apps/fe/src/environments/environment.ts
+
       - name: Generate environment file for frontend
         run: node generate-env.js
 
       - name: Print environment.ts before change
-        run: cat
+        run: cat apps/fe/src/environments/environment.ts
 
       - name: Generate build
         run: npm run mulesoft:build
