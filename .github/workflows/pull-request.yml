@@ -51,6 +51,9 @@ jobs:
       - name: Reset cache
         run: npm run reset-cache
 
+      - name: Where am I
+        run: ls
+
       - name: create env file
         run: |
           touch .env
@@ -62,6 +65,9 @@ jobs:
       - name: Generate environment file for frontend
         run: node generate-env.js
 
+      - name: Print environment.ts before change
+        run: cat
+
       - name: Generate build
         run: npm run mulesoft:build
 
@@ -71,108 +77,108 @@ jobs:
           name: dist
           path: dist/apps/mulesoft/
 
-  build-push-image-to-ecr:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: dist
-          path: ./dist
+  # build-push-image-to-ecr:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: dist
+  #         path: ./dist
 
-      - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          # https://www.udemy.com/course/github-actions-the-complete-guide/learn/lecture/34140726#overview
-          role-to-assume: arn:aws:iam::682755029646:role/ecs-access-for-github
-          aws-region: ${{ env.AWS_REGION }}
+  #     - name: configure aws credentials
+  #       uses: aws-actions/configure-aws-credentials@v2
+  #       with:
+  #         # https://www.udemy.com/course/github-actions-the-complete-guide/learn/lecture/34140726#overview
+  #         role-to-assume: arn:aws:iam::682755029646:role/ecs-access-for-github
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      # - name: Upload to s3
-      #   run: aws s3 sync ./dist s3://${{env.BUCKET_NAME}} --region ${{env.AWS_REGION}}
+  #     # - name: Upload to s3
+  #     #   run: aws s3 sync ./dist s3://${{env.BUCKET_NAME}} --region ${{env.AWS_REGION}}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        with:
-          driver: docker
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v1
+  #       with:
+  #         driver: docker
 
-      # - name: Build base image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: '{{defaultContext}}'
-      #     builder: ${{ steps.buildx.outputs.name }}
-      #     file: ./docker-base-action
-      #     tags: base:latest
+  #     # - name: Build base image
+  #     #   uses: docker/build-push-action@v2
+  #     #   with:
+  #     #     context: '{{defaultContext}}'
+  #     #     builder: ${{ steps.buildx.outputs.name }}
+  #     #     file: ./docker-base-action
+  #     #     tags: base:latest
 
-      - name: Extract Metadata for mulesoft Docker image
-        id: meta-mulesoft
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.MULESOFT_IMAGE_NAME }}
-          tags: type=match,pattern=\d.\d.\d
+  #     - name: Extract Metadata for mulesoft Docker image
+  #       id: meta-mulesoft
+  #       uses: docker/metadata-action@v5
+  #       with:
+  #         images: ${{ env.REGISTRY }}/${{ env.MULESOFT_IMAGE_NAME }}
+  #         tags: type=match,pattern=\d.\d.\d
 
-      - name: Extract metadata for FE Docker image to use as version no.
-        id: meta-fe
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.FE_IMAGE_NAME }}
-          tags: type=match,pattern=\d.\d.\d
+  #     - name: Extract metadata for FE Docker image to use as version no.
+  #       id: meta-fe
+  #       uses: docker/metadata-action@v5
+  #       with:
+  #         images: ${{ env.REGISTRY }}/${{ env.FE_IMAGE_NAME }}
+  #         tags: type=match,pattern=\d.\d.\d
 
-      - name: FE Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: '{{defaultContext}}'
-          file: ./docker-fe-action.yaml
-          push: ${{
-            github.event.base_ref =='refs/heads/feat/dlt-dockerfile' &&
-            github.ref_type == 'tag' &&
-            !startsWith(github.ref, 'refs/tags/v0.')
-            }}
-          tags: ${{ steps.meta-fe.outputs.tags }}
-          labels: ${{ steps.meta-fe.outputs.labels }}
+  #     - name: FE Build and push
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: '{{defaultContext}}'
+  #         file: ./docker-fe-action.yaml
+  #         push: ${{
+  #           github.event.base_ref =='refs/heads/feat/dlt-dockerfile' &&
+  #           github.ref_type == 'tag' &&
+  #           !startsWith(github.ref, 'refs/tags/v0.')
+  #           }}
+  #         tags: ${{ steps.meta-fe.outputs.tags }}
+  #         labels: ${{ steps.meta-fe.outputs.labels }}
 
-      - name: Mulesoft Build and Push
-        uses: docker/build-push-action@v4
-        with:
-          context: '{{defaultContext}}'
-          file: ./docker-mulesoft-action
-          push: ${{
-            github.event.base_ref =='refs/heads/feat/dlt-dockerfile' &&
-            github.ref_type == 'tag' &&
-            !startsWith(github.ref, 'refs/tags/v0.')
-            }}
-          tags: ${{ steps.meta-mulesoft.outputs.tags }}
-          labels: ${{ steps.meta-mulesoft.outputs.labels }}
+  #     - name: Mulesoft Build and Push
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: '{{defaultContext}}'
+  #         file: ./docker-mulesoft-action
+  #         push: ${{
+  #           github.event.base_ref =='refs/heads/feat/dlt-dockerfile' &&
+  #           github.ref_type == 'tag' &&
+  #           !startsWith(github.ref, 'refs/tags/v0.')
+  #           }}
+  #         tags: ${{ steps.meta-mulesoft.outputs.tags }}
+  #         labels: ${{ steps.meta-mulesoft.outputs.labels }}
 
-      # THE BELOW PART IAM COMMENTING AND WILL UNCOMMENT WHEN I RESOLVE THE INGRESS-NGINX ISSUE ON LOCAL
-      # AND WHEN ITS DEPLOYABLE TO EKS
-      - name: Set the Kubernetes context
-        uses: azure/k8s-set-context@v2
-        with:
-          method: service-account
-          k8s-url: https://1B07CCB425790B6CF5A21561575DBF1A.gr7.us-east-1.eks.amazonaws.com
-          k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+  #     # THE BELOW PART IAM COMMENTING AND WILL UNCOMMENT WHEN I RESOLVE THE INGRESS-NGINX ISSUE ON LOCAL
+  #     # AND WHEN ITS DEPLOYABLE TO EKS
+  #     - name: Set the Kubernetes context
+  #       uses: azure/k8s-set-context@v2
+  #       with:
+  #         method: service-account
+  #         k8s-url: https://1B07CCB425790B6CF5A21561575DBF1A.gr7.us-east-1.eks.amazonaws.com
+  #         k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
-      - name: checkout repo
-        uses: actions/checkout@v3
+  #     - name: checkout repo
+  #       uses: actions/checkout@v3
 
-      - name: Deploy to the kubernetes cluster
-        uses: azure/k8s-deploy@v1
-        with:
-          namespace: default
-          manifests: |
-            k8s/client/fe-clusterip-service.yaml
-            k8s/client/fe-deployment.yaml
-            k8s/server/mule-deployment.yaml
-            k8s/server/mule-clusterip-service.yaml
-            k8s/ingress-service-new.yaml
-          images: |
-            ${{ env.REGISTRY }}/${{ steps.meta-mulesoft.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ steps.meta-fe.outputs.tags }}
+  #     - name: Deploy to the kubernetes cluster
+  #       uses: azure/k8s-deploy@v1
+  #       with:
+  #         namespace: default
+  #         manifests: |
+  #           k8s/client/fe-clusterip-service.yaml
+  #           k8s/client/fe-deployment.yaml
+  #           k8s/server/mule-deployment.yaml
+  #           k8s/server/mule-clusterip-service.yaml
+  #           k8s/ingress-service-new.yaml
+  #         images: |
+  #           ${{ env.REGISTRY }}/${{ steps.meta-mulesoft.outputs.tags }}
+  #           ${{ env.REGISTRY }}/${{ steps.meta-fe.outputs.tags }}
 
-    # courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
-    # For image tagging https://medium.com/@haridasan/build-docker-images-using-github-actions-for-nestjs-monorepo-with-the-help-of-git-tags-9f6d404c40c5
+  #   # courtesy: https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
+  #   # For image tagging https://medium.com/@haridasan/build-docker-images-using-github-actions-for-nestjs-monorepo-with-the-help-of-git-tags-9f6d404c40c5
