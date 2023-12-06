@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: envread-settings
+data:
+  app.config.json: |-
+    {
+      "API_URL": "envapp"
+    }

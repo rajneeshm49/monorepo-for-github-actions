@@ -6,6 +6,9 @@ name: Push to main branch
 on:
   push:
     tags: ['**']
+    branches:
+      - 'main'
+      - 'releases/**'
 env:
   AWS_REGION: us-east-1
   REGISTRY: 682755029646.dkr.ecr.us-east-1.amazonaws.com

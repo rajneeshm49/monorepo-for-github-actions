@@ -18,5 +18,8 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: envread-volume
+              mountPath: /usr/share/nginx/html/assets/
       imagePullSecrets:
         - name: regcred
