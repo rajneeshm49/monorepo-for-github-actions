@@ -12,6 +12,10 @@ spec:
       labels:
         component: fe
     spec:
+      volumes:
+        - name: envread-volume
+          configMap:
+            name: envread-settings
       containers:
         - name: fe
           image: 682755029646.dkr.ecr.us-east-1.amazonaws.com/fe-app-non-prod

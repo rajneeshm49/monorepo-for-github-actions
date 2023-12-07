@@ -6,9 +6,6 @@ name: Push to main branch
 on:
   push:
     tags: ['**']
-    branches:
-      - 'main'
-      - 'releases/**'
 env:
   AWS_REGION: us-east-1
   REGISTRY: 682755029646.dkr.ecr.us-east-1.amazonaws.com
@@ -166,7 +163,7 @@ jobs:
         uses: azure/k8s-set-context@v2
         with:
           method: service-account
-          k8s-url: https://1B07CCB425790B6CF5A21561575DBF1A.gr7.us-east-1.eks.amazonaws.com
+          k8s-url: https://A717691A565964917C88944DDCD66C02.gr7.us-east-1.eks.amazonaws.com
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: checkout repo
@@ -179,6 +176,7 @@ jobs:
           manifests: |
             k8s/client/fe-clusterip-service.yaml
             k8s/client/fe-deployment.yaml
+            k8s/client/fe-configmap.yaml
             k8s/server/mule-deployment.yaml
             k8s/server/mule-clusterip-service.yaml
             k8s/ingress-service-new.yaml

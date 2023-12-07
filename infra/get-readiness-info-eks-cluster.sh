@@ -6,7 +6,6 @@ then
   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml;
   a="$(kubectl get service -n ingress-nginx)";
   externalip=$(sed  's/^.* \(.*.com\).*$/\1/g' <<<"$a")
-  sed -i .bak "s/- host: .*/- host: $externalip/g" k8s/ingress-service-new.yaml
 
   kubectl create secret docker-registry regcred  \
     --docker-server=682755029646.dkr.ecr.us-east-1.amazonaws.com \
