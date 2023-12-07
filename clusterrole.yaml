@@ -13,8 +13,8 @@ rules:
       - replicasets
       - ingresses
       - services
-      - secrets
       - configmaps
+      - secrets
     verbs:
       - create
       - delete
