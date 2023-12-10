@@ -13,7 +13,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.enableCors({
-    origin: ['http://localhost', 'http://localhost:80', environment.FE_URL],
+    origin: [
+      'http://localhost',
+      'http://localhost:80',
+      environment.FE_URL,
+      'mule-clusterip-service',
+      'mule-clusterip-service:3000',
+    ],
     preflightContinue: true,
     methods: 'GET, POST',
   });
