@@ -163,7 +163,7 @@ jobs:
         uses: azure/k8s-set-context@v2
         with:
           method: service-account
-          k8s-url: https://A717691A565964917C88944DDCD66C02.gr7.us-east-1.eks.amazonaws.com
+          k8s-url: https://F16517A4E93A303C280998B32567FE11.gr7.us-east-1.eks.amazonaws.com
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: checkout repo
