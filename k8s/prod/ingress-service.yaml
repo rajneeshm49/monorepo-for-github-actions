@@ -15,25 +15,25 @@ metadata:
 spec:
   rules:
     - host: ad924fcda0bbd446cbd9b9d2ef679573-3c141679486970bd.elb.us-east-1.amazonaws.com
-        http:
-          paths:
-            - path: /?(.*)
-              # UPDATE PATH
-              pathType: Prefix
-              # ADD PATHTYPE
-              backend:
-                service:
-                  # UPDATE SERVICE FIELDS
-                  name: fe-clusterip-service
-                  port:
-                    number: 80
-            - path: /api/?(.*)
-              # UPDATE PATH
-              pathType: Prefix
-              # ADD PATHTYPE
-              backend:
-                service:
-                  # UPDATE SERVICE FIELDS
-                  name: mule-clusterip-service
-                  port:
-                    number: 3000
+      http:
+        paths:
+          - path: /?(.*)
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: fe-clusterip-service
+                port:
+                  number: 80
+          - path: /api/?(.*)
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: mule-clusterip-service
+                port:
+                  number: 3000

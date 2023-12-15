@@ -22,9 +22,9 @@ then
 
   sed -i .bak "s/- host: .*/- host: $externalip/g" k8s/prod/ingress-service.yaml
 
-  secretyaml="$(kubectl get secret github-actions-secret -o yaml)";
-  echo "paste below output in KUBERNETES_SECRET var in github secrets and also copy kubernetes server url in pull-request file";
-  echo $secretyaml
+  echo "STEP 1: PASTE OUTPUT OF `kubectl get secret github-actions-secret -o yaml` IN GITHUB SECRETS";
+  echo "STEP 2: COPY KUBERNETES SERVER URL IN PULL-REQUEST FILE";
+  echo "STEP 3: RUN `kubectl get service -n ingress-nginx`, GET THE LB URL AND COPY IT IN PROD/INGRESS-SERVICE.YAML "
 else
   echo "The cluster is not ready yet";
 fi
