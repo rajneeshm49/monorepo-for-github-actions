@@ -179,7 +179,7 @@ jobs:
             k8s/client/fe-deployment.yaml
             k8s/server/mule-deployment.yaml
             k8s/server/mule-clusterip-service.yaml
-            k8s/ingress-service-new.yaml
+            k8s/prod/ingress-service.yaml
           images: |
             ${{ env.REGISTRY }}/${{ steps.meta-mulesoft.outputs.tags }}
             ${{ env.REGISTRY }}/${{ steps.meta-fe.outputs.tags }}

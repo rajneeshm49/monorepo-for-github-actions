@@ -5,5 +5,5 @@ metadata:
 data:
   app.config.json: |-
     {
-      "API_URL": "mule-clusterip-service:3000/api"
+      "API_URL": "http://localhost/api"
     }
