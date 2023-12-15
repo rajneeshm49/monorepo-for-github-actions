@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: envread-settings
+data:
+  app.config.json: |-
+    {
+      "API_URL": "http://ad924fcda0bbd446cbd9b9d2ef679573-3c141679486970bd.elb.us-east-1.amazonaws.com/api"
+    }

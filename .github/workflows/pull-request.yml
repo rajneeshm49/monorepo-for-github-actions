@@ -175,7 +175,7 @@ jobs:
           namespace: default
           manifests: |
             k8s/client/fe-clusterip-service.yaml
-            k8s/client/fe-configmap.yaml
+            k8s/prod/fe-configmap.yaml
             k8s/client/fe-deployment.yaml
             k8s/server/mule-deployment.yaml
             k8s/server/mule-clusterip-service.yaml
